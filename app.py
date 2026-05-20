@@ -5,7 +5,7 @@ import numpy as np
 import re
 
 # 1. Configuration ny pejy (Atao lehibe ny rafitra)
-st.set_page_config(page_title="Aviator Predictor Web", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Predictor Web", layout="wide", initial_sidebar_state="collapsed")
 
 # 2. CSS ho an'ny fomba fijery Néon sy Glassmorphism kanto
 st.markdown("""
@@ -81,14 +81,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 3. Lohateny lehibe eo an-tampony
-st.markdown('<div class="neon-title">🚀 JET & AVIATOR PREDICTOR</div>', unsafe_allow_html=True)
+st.markdown('<div class="neon-title">🚀 PREDICTER</div>', unsafe_allow_html=True)
 st.markdown('<div class="neon-subtitle">Advanced Live Image Analysis & Time Cycle Forecasting</div>', unsafe_allow_html=True)
 
-# 4. Fametrahana ny Layout mizara roa (Columns): Ankavia = Sary, Ankavanana = Vokatra
+# 4. Fametrahana ny Layout mizara roa (Columns): Ankavia = Image, Ankavanana = Réultat
 col_gauche, col_havanana = st.columns([1, 1.2], gap="large")
 
 with col_gauche:
-    st.markdown("<p style='color: #00ffff; font-weight: bold;'>Fidio ny sarin'ny tantaran'ny lalao avy amin'ny BET261 (PNG na JPG)...</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #00ffff; font-weight: bold;'>Veuillez selectionner l'historique dans le BET261 (PNG na JPG)...</p>", unsafe_allow_html=True)
     uploaded_file = st.file_uploader("", type=["png", "jpg", "jpeg"])
 
 with col_havanana:
@@ -101,7 +101,7 @@ with col_havanana:
             with col_gauche:
                 st.image(image, caption="Sary nampidirina", use_container_width=True)
             
-            with st.spinner("Eo am-pamakiana ny sary ny fitaovana..."):
+            with st.spinner("En cours de traitement du résultat..."):
                 # Initialisation an'ny EasyOCR (mampiasa CPU mba tsy hisy olana)
                 reader = easyocr.Reader(['fr', 'en'], gpu=False)
                 
@@ -120,8 +120,8 @@ with col_havanana:
                     # Raha tsy sary Aviator/Jet no nampidirina
                     st.markdown("""
                         <div class="error-card">
-                            ⚠️ HADISOANA: Tsy sarin'ny lalao BET261 Aviator na JetX vao re mifanaraka amin'ity fitaovana ity io nampidirinao io. <br>
-                            Mba mampidira capture misy ny tantaran'ny multiplier azafady!
+                            ⚠️ Erreur : Veuillez entrer correctement des images corresponds sur le résultat du jeux. <br>
+                            Mba mampidira capture misy ny historique ny multiplier azafady!
                         </div>
                     """, unsafe_allow_html=True)
                 else:
@@ -129,7 +129,7 @@ with col_havanana:
                     # Ohatra fotsiny ireto:
                     predicted_hour = "14:42:15"
                     predicted_multiplier = "2.45x"
-                    analysis_status = "Tafakatra soa aman-tsara! Ny algorithm dia nahatsikaritra tsingerina vaovao avy amin'ireo multiplier farany teo."
+                    analysis_status = "Analyse effectuer! Nahita vokatra vaovao avy amin'ireo multiplier farany teo ny code."
                     
                     # 6. ASEHO NY VOKATRA EO AMBANY TITRE (Ao amin'ny col_havanana)
                     st.markdown(f"""
