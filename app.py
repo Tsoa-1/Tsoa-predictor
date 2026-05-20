@@ -53,21 +53,20 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* Manova ny fampidirana sary an'ny Streamlit ho lasa Glassmorphism sy Néon raikitra */
+    /* Manova ny fampidirana sary an'ny Streamlit ho lasa Glassmorphism raikitra */
     [data-testid="stFileUploader"] {
         background: rgba(255, 255, 255, 0.03);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-radius: 16px;
         border: 1px solid rgba(0, 255, 255, 0.25);
-        padding: 10px;
+        padding: 15px;
         box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
         transition: all 0.3s ease;
         height: 195px;
         display: flex;
         align-items: center;
         justify-content: center;
-        position: relative; /* Ilaina amin'ny fampitsingafanana sary */
     }
     
     [data-testid="stFileUploader"]:hover {
@@ -75,27 +74,25 @@ st.markdown("""
         box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
     }
 
-    /* Famafana ny fotsy d'origine amin'ny Streamlit uploader */
+    /* Famafana ny fotsy d'origine amin'ny Streamlit */
     [data-testid="stFileUploader"] section {
         background: transparent !important;
         background-color: transparent !important;
         border: none !important;
         width: 100%;
         padding: 0 !important;
-        z-index: 2; /* Atao ambony mba ho afaka tsindriana foana */
     }
     
-    /* Atao fotsy mazava ny soratra ao anatin'ny uploader */
+    /* Atao fotsy mazava ny soratra fototra rehetra */
     [data-testid="stFileUploader"] label, 
     [data-testid="stFileUploader"] p,
-    [data-testid="stFileUploader"] span,
-    [data-testid="stText"] {
+    [data-testid="stFileUploader"] span {
         color: #ffffff !important;
         text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
         font-weight: 500 !important;
     }
 
-    /* Manova ilay bokotra kely "Browse files" */
+    /* Manova ilay bokotra "Browse files" */
     [data-testid="stFileUploader"] button {
         background-color: rgba(255, 255, 255, 0.1) !important;
         color: #ffffff !important;
@@ -103,29 +100,49 @@ st.markdown("""
         border-radius: 8px !important;
     }
     
-    /* 🎯 FIKA MAVANTANA: Terena hifintina sy hitsinkafona ao anatin'ilay uploader mivantana ilay sary */
+    /* 🎯 FANAMBOARANA NY FILAHARAN'ILAY SARY SY NY BOKOTRA "X" */
+    /* Avadika ho andalana iray mirindra ilay boaty misy ny sary sy ny anarany */
+    [data-testid="stFileUploaderCard"] {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 12px !important;
+        padding: 8px 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 15px !important;
+        width: 100% !important;
+    }
+
+    /* Terena ho kely sy ho hita tsara eo ankavia ilay preview nampidirina */
     [data-testid="stColumn"] [data-testid="stImage"] {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        width: calc(100% - 20px) !important;
-        height: 175px !important;
-        z-index: 1; /* Atao ao ambanin'ny soratra sy ny bokotra "X" an'ny uploader */
-        pointer-events: none; /* Tsy manelingelina fipihana */
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 60px !important;
+        height: 45px !important;
     }
     
     [data-testid="stColumn"] [data-testid="stImage"] img {
-        width: 100% !important;
-        height: 175px !important;
-        object-fit: cover !important; /* Terena hameno tsara ilay zone nefa tsy miova endrika */
-        border-radius: 12px;
-        opacity: 0.4; /* Atao manify kely ny sary ao ambadika mba ho hita tsara ny uploader */
+        width: 60px !important;
+        height: 45px !important;
+        object-fit: cover !important;
+        border-radius: 6px !important;
+        border: 1px solid rgba(255, 255, 255, 0.4);
     }
 
-    /* Arovan'ny rafitra ny bokotra "X" d'origine mba ho hita sady ho voakitika tsara */
+    /* Manasongadina sy mampisongadina tsara an'ilay bokotra "X" mamafa sary */
+    [data-testid="stFileUploaderDeleteBtn"] {
+        margin-left: auto !important; /* Terena ho any amin'ny farany havanana indrindra */
+    }
+    
     [data-testid="stFileUploaderIconClear"] {
-        fill: #ff0055 !important; /* Loko mena kely ilay X mba ho hita tsara */
-        scale: 1.3;
+        fill: #ff3366 !important; /* Loko mena neon kely mba ho hita tsara sy mora tsindriana */
+        transform: scale(1.3);
+        transition: transform 0.2s;
+    }
+    
+    [data-testid="stFileUploaderIconClear"]:hover {
+        transform: scale(1.5);
     }
     
     /* Style ho an'ny vokatra lehibe */
@@ -171,6 +188,8 @@ col_gauche, col_havanana = st.columns([1, 1.2], gap="large")
 
 with col_gauche:
     st.markdown("<p style='color: #00ffff; font-weight: bold; margin-bottom: 15px;'>Veuillez selectionner l'historique dans le BET261 (PNG na JPG)...</p>", unsafe_allow_html=True)
+    
+    # Ity uploader ity dia hitoetra raikitra foana ary tsy ovaina intsony ny habeny
     uploaded_file = st.file_uploader("", type=["png", "jpg", "jpeg"])
 
 with col_havanana:
@@ -181,9 +200,9 @@ with col_havanana:
             # Sokafy ny sary nampidirina
             image = Image.open(uploaded_file)
             
-            # 🔄 AMPIDIRINA AO AMBANINY FA APERIPERINA AMIN'NY CSS HO AO ANATY ZONE UPLOADER
+            # 🔄 AMPIDIRINA AO ANATIN'ILAY BOOTY UPLOADER FA ATAO THUMBNAIL KELY EO ANKAVIAN'ILAY ANARANY
             with col_gauche:
-                st.image(image, use_container_width=True)
+                st.image(image, use_container_width=False)
             
             with st.spinner("En cours de traitement du résultat..."):
                 # Initialisation an'ny EasyOCR
