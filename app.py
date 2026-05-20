@@ -47,8 +47,7 @@ st.markdown("""
         border: 1px solid rgba(255, 255, 255, 0.1);
         padding: 25px;
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        height: 100%;
-        min-height: 190px;
+        height: 195px; /* Natao raikitra mba hitovy amin'ny file uploader */
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -60,10 +59,14 @@ st.markdown("""
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-radius: 16px;
-        border: 1px solid rgba(0, 255, 255, 0.2);
-        padding: 15px;
+        border: 1px solid rgba(0, 255, 255, 0.25);
+        padding: 10px;
         box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
         transition: all 0.3s ease;
+        height: 195px; /* Natao raikitra mitovy amin'ny glass-card */
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     [data-testid="stFileUploader"]:hover {
@@ -71,15 +74,37 @@ st.markdown("""
         box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
     }
 
-    /* Manova ny soratra ao anatin'ilay drag & drop fampidirana sary */
+    /* Famafana ny fotsy sy ny background d'origine amin'ny Streamlit */
     [data-testid="stFileUploader"] section {
         background: transparent !important;
         background-color: transparent !important;
         border: none !important;
+        width: 100%;
+        padding: 0 !important;
     }
     
-    [data-testid="stFileUploader"] label, [data-testid="stFileUploader"] p {
-        color: #e0e0e0 !important;
+    /* ATAO FOTSY MAZAVA NY SORATRA REHETRA AO ANATIN'NY UPLOADER */
+    [data-testid="stFileUploader"] label, 
+    [data-testid="stFileUploader"] p,
+    [data-testid="stFileUploader"] span,
+    [data-testid="stText"] {
+        color: #ffffff !important;
+        text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
+        font-weight: 500 !important;
+    }
+
+    /* Manova ilay bokotra kely "Browse files" ho hita tsara */
+    [data-testid="stFileUploader"] button {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 8px !important;
+        transition: background 0.2s ease;
+    }
+    
+    [data-testid="stFileUploader"] button:hover {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        border: 1px solid rgba(0, 255, 255, 0.6) !important;
     }
     
     /* Style ho an'ny vokatra lehibe */
@@ -108,7 +133,7 @@ st.markdown("""
         font-weight: bold;
         text-align: center;
         box-shadow: 0 0 15px rgba(255, 0, 85, 0.2);
-        height: 100%;
+        height: 195px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -120,16 +145,16 @@ st.markdown("""
 st.markdown('<div class="neon-title">🚀 PREDICTEUR</div>', unsafe_allow_html=True)
 st.markdown('<div class="neon-subtitle">Advanced Live Image Analysis & Time Cycle Forecasting</div>', unsafe_allow_html=True)
 
-# 4. Fametrahana ny Layout mizara roa (Columns): Ankavia = Image, Ankavanana = Réultat
+# 4. Fametrahana ny Layout mizara roa (Columns): Ankavia = Image, Ankavanana = Résultat
 col_gauche, col_havanana = st.columns([1, 1.2], gap="large")
 
 with col_gauche:
-    st.markdown("<p style='color: #00ffff; font-weight: bold; margin-bottom: 10px;'>Veuillez selectionner l'historique dans le BET261 (PNG na JPG)...</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #00ffff; font-weight: bold; margin-bottom: 15px;'>Veuillez selectionner l'historique dans le BET261 (PNG na JPG)...</p>", unsafe_allow_html=True)
     uploaded_file = st.file_uploader("", type=["png", "jpg", "jpeg"])
 
 with col_havanana:
-    # Asiana sponjy kely eo ambony mba hifanitsy tsara amin'ny tsipika an'ny col_gauche
-    st.markdown("<div style='height: 35px;'></div>", unsafe_allow_html=True)
+    # Nampiana lohateny Résultat mifanitsy tsara amin'ny ankavia
+    st.markdown("<p style='color: #00ffff; font-weight: bold; margin-bottom: 15px;'>Résultat de l'analyse :</p>", unsafe_allow_html=True)
     
     if uploaded_file is not None:
         try:
@@ -138,7 +163,7 @@ with col_havanana:
             
             # Asehoy kely ao ambanin'ny fampidirana ny sary mba ho hita
             with col_gauche:
-                st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+                st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
                 st.image(image, caption="Sary nampidirina", use_container_width=True)
             
             with st.spinner("En cours de traitement du résultat..."):
@@ -149,7 +174,7 @@ with col_havanana:
                 image_np = np.array(image)
                 ocr_results = reader.readtext(image_np)
                 
-                # Atambatra the teny rehetra hita tao anatin'ny sary
+                # Atambatra ny teny rehetra hita tao anatin'ny sary
                 all_text = " ".join([res[1].lower() for res in ocr_results])
                 
                 # 5. SIVANA: Hamarinina raha misy teny manamarina ny maha Aviator/Jet azy
@@ -166,12 +191,11 @@ with col_havanana:
                     """, unsafe_allow_html=True)
                 else:
                     # SIMULATION NY LALÀNA (Azonao ovaina mifanaraka amin'ny algorithm-nao eto)
-                    # Ohatra fotsiny ireto:
                     predicted_hour = "14:42:15"
                     predicted_multiplier = "2.45x"
                     analysis_status = "Analyse effectuer! Nahita vokatra vaovao avy amin'ireo multiplier farany teo ny code."
                     
-                    # 6. ASEHO NY VOKATRA EO AMBANY TITRE (Ao amin'ny col_havanana)
+                    # 6. ASEHO NY VOKATRA EO AMBANY TITRE
                     st.markdown(f"""
                         <div class="glass-card">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -199,7 +223,7 @@ with col_havanana:
     else:
         # Rehefa mbola banga ny pejy
         st.markdown("""
-            <div class="glass-card" style="text-align: center; color: #888; padding: 40px 20px;">
+            <div class="glass-card" style="text-align: center; color: #ffffff; padding: 40px 20px;">
                 Mbola miandry sary... Ampididro eo amin'ny ankavia ny capture-nao mba hivoahan'ny vinany eto.
             </div>
         """, unsafe_allow_html=True)
