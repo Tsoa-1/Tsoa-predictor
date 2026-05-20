@@ -100,20 +100,39 @@ st.markdown("""
         border-radius: 8px !important;
     }
     
-    /* Karatra d'origine an'ny Streamlit rehefa misy file tafiditra */
+    /* 🎯 FANAMBOARANA AN'ILAY FARETR'NY LISITRY NY SARY CHERGER */
     [data-testid="stFileUploaderCard"] {
         background-color: rgba(255, 255, 255, 0.08) !important;
         border: 1px solid rgba(255, 255, 255, 0.15) !important;
         border-radius: 12px !important;
         padding: 10px 15px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
     }
 
-    /* Loko mena neon ho an'ilay bokotra "X" mba ho hita tsara sy ho mora tsindriana */
+    /* Terena hiseho tsara sady ho azo kitihina ny bokotra delete rehetra */
+    [data-testid="stFileUploaderDeleteBtn"] {
+        display: inline-flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* 🎯 MANAFTSANA SY MANOME LOKO AN'ILAY BOKOTRA "X" APERIPERINA */
     [data-testid="stFileUploaderIconClear"] {
-        fill: #ff3366 !important;
-        transform: scale(1.2);
+        fill: #ff3366 !important; /* Loko mena neon kely mba ho hita tsara */
+        display: block !important;
+        visibility: visible !important;
+        transform: scale(1.4) !important; /* Atao lehibe kely mba ho mora voatendry amin'ny finday */
+        cursor: pointer !important;
     }
     
+    /* Esorina ilay bokotra "+" manelingelina tsy ho hita */
+    [data-testid="stFileUploaderCard"] button:not([data-testid="stFileUploaderDeleteBtn"]) {
+        display: none !important;
+    }
+
     /* Style ho an'ny vokatra lehibe */
     .result-value {
         font-size: 28px;
@@ -158,7 +177,7 @@ col_gauche, col_havanana = st.columns([1, 1.2], gap="large")
 with col_gauche:
     st.markdown("<p style='color: #00ffff; font-weight: bold; margin-bottom: 15px;'>Veuillez selectionner l'historique dans le BET261 (PNG na JPG)...</p>", unsafe_allow_html=True)
     
-    # Ity uploader ity dia hitoetra raikitra amin'ny habe 195px foana na misy rakitra na tsia
+    # Ity uploader ity dia raikitra amin'ny habe 195px foana sady tsy mampiseho sary intsony
     uploaded_file = st.file_uploader("", type=["png", "jpg", "jpeg"])
 
 with col_havanana:
@@ -166,7 +185,7 @@ with col_havanana:
     
     if uploaded_file is not None:
         try:
-            # Charger-na fotsy ao anaty memonry fotsiny ilay sary fa TSY ASEHO eo amin'ny UI intsony
+            # Charger-na fotsiny ao anaty memonry ilay sary fa TSY ASEHO eo amin'ny UI intsony araka ny nifanarahana
             image = Image.open(uploaded_file)
             
             with st.spinner("En cours de traitement du résultat..."):
@@ -185,7 +204,6 @@ with col_havanana:
                 is_valid_game = any(kw in all_text for kw in keywords) or bool(re.search(r'\d+\.\d+x', all_text))
                 
                 if not is_valid_game:
-                    # Raha tsy sary Aviator/Jet no nampidirina
                     st.markdown("""
                         <div class="error-card">
                             ⚠️ Erreur : Veuillez entrer correctement des images corresponds sur le résultat du jeux. <br><br>
@@ -224,7 +242,6 @@ with col_havanana:
                 </div>
             """, unsafe_allow_html=True)
     else:
-        # Rehefa mbola banga ny pejy
         st.markdown("""
             <div class="glass-card" style="text-align: center; color: #ffffff; padding: 40px 20px;">
                 Mbola miandry sary... Ampididro eo amin'ny ankavia ny capture-nao mba hivoahan'ny vinany eto.
