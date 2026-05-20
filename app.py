@@ -74,7 +74,7 @@ st.markdown("""
         box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
     }
 
-    /* Famafana ny fotsy d'origine amin'ny Streamlit */
+    /* Famafana ny background fotsy d'origine amin'ny Streamlit */
     [data-testid="stFileUploader"] section {
         background: transparent !important;
         background-color: transparent !important;
@@ -100,49 +100,18 @@ st.markdown("""
         border-radius: 8px !important;
     }
     
-    /* 🎯 FANAMBOARANA NY FILAHARAN'ILAY SARY SY NY BOKOTRA "X" */
-    /* Avadika ho andalana iray mirindra ilay boaty misy ny sary sy ny anarany */
+    /* Karatra d'origine an'ny Streamlit rehefa misy file tafiditra */
     [data-testid="stFileUploaderCard"] {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
         border-radius: 12px !important;
-        padding: 8px 12px !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 15px !important;
-        width: 100% !important;
+        padding: 10px 15px !important;
     }
 
-    /* Terena ho kely sy ho hita tsara eo ankavia ilay preview nampidirina */
-    [data-testid="stColumn"] [data-testid="stImage"] {
-        display: block !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 60px !important;
-        height: 45px !important;
-    }
-    
-    [data-testid="stColumn"] [data-testid="stImage"] img {
-        width: 60px !important;
-        height: 45px !important;
-        object-fit: cover !important;
-        border-radius: 6px !important;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-    }
-
-    /* Manasongadina sy mampisongadina tsara an'ilay bokotra "X" mamafa sary */
-    [data-testid="stFileUploaderDeleteBtn"] {
-        margin-left: auto !important; /* Terena ho any amin'ny farany havanana indrindra */
-    }
-    
+    /* Loko mena neon ho an'ilay bokotra "X" mba ho hita tsara sy ho mora tsindriana */
     [data-testid="stFileUploaderIconClear"] {
-        fill: #ff3366 !important; /* Loko mena neon kely mba ho hita tsara sy mora tsindriana */
-        transform: scale(1.3);
-        transition: transform 0.2s;
-    }
-    
-    [data-testid="stFileUploaderIconClear"]:hover {
-        transform: scale(1.5);
+        fill: #ff3366 !important;
+        transform: scale(1.2);
     }
     
     /* Style ho an'ny vokatra lehibe */
@@ -189,7 +158,7 @@ col_gauche, col_havanana = st.columns([1, 1.2], gap="large")
 with col_gauche:
     st.markdown("<p style='color: #00ffff; font-weight: bold; margin-bottom: 15px;'>Veuillez selectionner l'historique dans le BET261 (PNG na JPG)...</p>", unsafe_allow_html=True)
     
-    # Ity uploader ity dia hitoetra raikitra foana ary tsy ovaina intsony ny habeny
+    # Ity uploader ity dia hitoetra raikitra amin'ny habe 195px foana na misy rakitra na tsia
     uploaded_file = st.file_uploader("", type=["png", "jpg", "jpeg"])
 
 with col_havanana:
@@ -197,25 +166,21 @@ with col_havanana:
     
     if uploaded_file is not None:
         try:
-            # Sokafy ny sary nampidirina
+            # Charger-na fotsy ao anaty memonry fotsiny ilay sary fa TSY ASEHO eo amin'ny UI intsony
             image = Image.open(uploaded_file)
-            
-            # 🔄 AMPIDIRINA AO ANATIN'ILAY BOOTY UPLOADER FA ATAO THUMBNAIL KELY EO ANKAVIAN'ILAY ANARANY
-            with col_gauche:
-                st.image(image, use_container_width=False)
             
             with st.spinner("En cours de traitement du résultat..."):
                 # Initialisation an'ny EasyOCR
                 reader = easyocr.Reader(['fr', 'en'], gpu=False)
                 
-                # Avadika ho numpy array ny sary
+                # Avadika ho numpy array ny sary ho an'ny OCR
                 image_np = np.array(image)
                 ocr_results = reader.readtext(image_np)
                 
                 # Atambatra ny teny rehetra hita tao anatin'ny sary
                 all_text = " ".join([res[1].lower() for res in ocr_results])
                 
-                # 5. SIVANA: Hamarinina raha misy teny manamarina ny maha Aviator/Jet azy
+                # 5. SIVANA: Hamarinina raha sary Aviator/Jet no nampidirina
                 keywords = ["aviator", "jetx", "multiplier", "multiplicateur", "parier", "bet", "historique", "rounds"]
                 is_valid_game = any(kw in all_text for kw in keywords) or bool(re.search(r'\d+\.\d+x', all_text))
                 
@@ -228,12 +193,12 @@ with col_havanana:
                         </div>
                     """, unsafe_allow_html=True)
                 else:
-                    # SIMULATION NY LALÀNA
+                    # SIMULATION NY LALÀNA ALGORITHM
                     predicted_hour = "14:42:15"
                     predicted_multiplier = "2.45x"
                     analysis_status = "Analyse effectuer! Nahita vokatra vaovao avy amin'ireo multiplier farany teo ny code."
                     
-                    # 6. ASEHO NY VOKATRA EO AMBANY TITRE
+                    # 6. ASEHO NY VOKATRA
                     st.markdown(f"""
                         <div class="glass-card">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
