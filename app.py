@@ -81,7 +81,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 3. Lohateny lehibe eo an-tampony
-st.markdown('<div class="neon-title">🚀 PREDICTER</div>', unsafe_allow_html=True)
+st.markdown('<div class="neon-title">🚀 PREDICTEUR</div>', unsafe_allow_html=True)
 st.markdown('<div class="neon-subtitle">Advanced Live Image Analysis & Time Cycle Forecasting</div>', unsafe_allow_html=True)
 
 # 4. Fametrahana ny Layout mizara roa (Columns): Ankavia = Image, Ankavanana = Réultat
