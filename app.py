@@ -53,7 +53,7 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* Manova ny fampidirana sary an'ny Streamlit ho lasa Glassmorphism sy Néon */
+    /* Manova ny fampidirana sary an'ny Streamlit ho lasa Glassmorphism sy Néon raikitra */
     [data-testid="stFileUploader"] {
         background: rgba(255, 255, 255, 0.03);
         backdrop-filter: blur(12px);
@@ -67,7 +67,7 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
+        position: relative; /* Ilaina amin'ny fampitsingafanana sary */
     }
     
     [data-testid="stFileUploader"]:hover {
@@ -75,16 +75,17 @@ st.markdown("""
         box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
     }
 
-    /* Famafana ny fotsy sy ny background d'origine amin'ny Streamlit */
+    /* Famafana ny fotsy d'origine amin'ny Streamlit uploader */
     [data-testid="stFileUploader"] section {
         background: transparent !important;
         background-color: transparent !important;
         border: none !important;
         width: 100%;
         padding: 0 !important;
+        z-index: 2; /* Atao ambony mba ho afaka tsindriana foana */
     }
     
-    /* Atao fotsy mazava ny soratra rehetra ao anatin'ny uploader */
+    /* Atao fotsy mazava ny soratra ao anatin'ny uploader */
     [data-testid="stFileUploader"] label, 
     [data-testid="stFileUploader"] p,
     [data-testid="stFileUploader"] span,
@@ -94,7 +95,7 @@ st.markdown("""
         font-weight: 500 !important;
     }
 
-    /* Manova ilay bokotra kely "Browse files" ho hita tsara */
+    /* Manova ilay bokotra kely "Browse files" */
     [data-testid="stFileUploader"] button {
         background-color: rgba(255, 255, 255, 0.1) !important;
         color: #ffffff !important;
@@ -102,20 +103,29 @@ st.markdown("""
         border-radius: 8px !important;
     }
     
-    /* Fika ho an'ny sary tafiditra mba hifintina tsara ao anatin'ilay zone uploader */
-    .preview-container {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        border-radius: 12px;
+    /* 🎯 FIKA MAVANTANA: Terena hifintina sy hitsinkafona ao anatin'ilay uploader mivantana ilay sary */
+    [data-testid="stColumn"] [data-testid="stImage"] {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: calc(100% - 20px) !important;
+        height: 175px !important;
+        z-index: 1; /* Atao ao ambanin'ny soratra sy ny bokotra "X" an'ny uploader */
+        pointer-events: none; /* Tsy manelingelina fipihana */
     }
-    .preview-container img {
-        max-width: 100%;
-        max-height: 175px;
-        object-fit: contain;
+    
+    [data-testid="stColumn"] [data-testid="stImage"] img {
+        width: 100% !important;
+        height: 175px !important;
+        object-fit: cover !important; /* Terena hameno tsara ilay zone nefa tsy miova endrika */
+        border-radius: 12px;
+        opacity: 0.4; /* Atao manify kely ny sary ao ambadika mba ho hita tsara ny uploader */
+    }
+
+    /* Arovan'ny rafitra ny bokotra "X" d'origine mba ho hita sady ho voakitika tsara */
+    [data-testid="stFileUploaderIconClear"] {
+        fill: #ff0055 !important; /* Loko mena kely ilay X mba ho hita tsara */
+        scale: 1.3;
     }
     
     /* Style ho an'ny vokatra lehibe */
@@ -161,12 +171,7 @@ col_gauche, col_havanana = st.columns([1, 1.2], gap="large")
 
 with col_gauche:
     st.markdown("<p style='color: #00ffff; font-weight: bold; margin-bottom: 15px;'>Veuillez selectionner l'historique dans le BET261 (PNG na JPG)...</p>", unsafe_allow_html=True)
-    
-    # Mamorona toerana raikitra ho an'ny uploader na preview
-    zone_gauche = st.empty()
-    
-    # Laharan'ny uploader tsotra aloha
-    uploaded_file = zone_gauche.file_uploader("", type=["png", "jpg", "jpeg"])
+    uploaded_file = st.file_uploader("", type=["png", "jpg", "jpeg"])
 
 with col_havanana:
     st.markdown("<p style='color: #00ffff; font-weight: bold; margin-bottom: 15px;'>Résultat de l'analyse :</p>", unsafe_allow_html=True)
@@ -176,24 +181,15 @@ with col_havanana:
             # Sokafy ny sary nampidirina
             image = Image.open(uploaded_file)
             
-            # 🔄 FINTININA SY AMPIDIRINA AO ANATIN'ILAY ZONE UPLOADER IHANY NY SARY
-            # Solointsika sary mivantana ilay uploader teo amin'ny col_gauche
-            with zone_gauche.container():
-                st.markdown(f"""
-                    <div class="stFileUploader">
-                        <div class="preview-container">
-                            <img src="data:image/png;base64," id="preview-img">
-                        </div>
-                    </div>
-                """, unsafe_allow_html=True)
-                # Ampiasaina ny st.image d'origine fa terena ho ao anatin'ilay container vao novolavolaina
-                zone_gauche.image(image, use_container_width=True)
+            # 🔄 AMPIDIRINA AO AMBANINY FA APERIPERINA AMIN'NY CSS HO AO ANATY ZONE UPLOADER
+            with col_gauche:
+                st.image(image, use_container_width=True)
             
             with st.spinner("En cours de traitement du résultat..."):
-                # Initialisation an'ny EasyOCR (mampiasa CPU mba tsy hisy olana)
+                # Initialisation an'ny EasyOCR
                 reader = easyocr.Reader(['fr', 'en'], gpu=False)
                 
-                # Avadika ho numpy array ny sary mba ho takatry ny OCR
+                # Avadika ho numpy array ny sary
                 image_np = np.array(image)
                 ocr_results = reader.readtext(image_np)
                 
@@ -213,7 +209,7 @@ with col_havanana:
                         </div>
                     """, unsafe_allow_html=True)
                 else:
-                    # SIMULATION NY LALÀNA (Azonao ovaina mifanaraka amin'ny algorithm-nao eto)
+                    # SIMULATION NY LALÀNA
                     predicted_hour = "14:42:15"
                     predicted_multiplier = "2.45x"
                     analysis_status = "Analyse effectuer! Nahita vokatra vaovao avy amin'ireo multiplier farany teo ny code."
