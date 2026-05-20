@@ -47,7 +47,7 @@ st.markdown("""
         border: 1px solid rgba(255, 255, 255, 0.1);
         padding: 25px;
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        height: 195px; /* Natao raikitra mba hitovy amin'ny file uploader */
+        height: 195px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -63,10 +63,11 @@ st.markdown("""
         padding: 10px;
         box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
         transition: all 0.3s ease;
-        height: 195px; /* Natao raikitra mitovy amin'ny glass-card */
+        height: 195px;
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow: hidden;
     }
     
     [data-testid="stFileUploader"]:hover {
@@ -83,7 +84,7 @@ st.markdown("""
         padding: 0 !important;
     }
     
-    /* ATAO FOTSY MAZAVA NY SORATRA REHETRA AO ANATIN'NY UPLOADER */
+    /* Atao fotsy mazava ny soratra rehetra ao anatin'ny uploader */
     [data-testid="stFileUploader"] label, 
     [data-testid="stFileUploader"] p,
     [data-testid="stFileUploader"] span,
@@ -99,12 +100,22 @@ st.markdown("""
         color: #ffffff !important;
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
         border-radius: 8px !important;
-        transition: background 0.2s ease;
     }
     
-    [data-testid="stFileUploader"] button:hover {
-        background-color: rgba(255, 255, 255, 0.2) !important;
-        border: 1px solid rgba(0, 255, 255, 0.6) !important;
+    /* Fika ho an'ny sary tafiditra mba hifintina tsara ao anatin'ilay zone uploader */
+    .preview-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+    .preview-container img {
+        max-width: 100%;
+        max-height: 175px;
+        object-fit: contain;
     }
     
     /* Style ho an'ny vokatra lehibe */
@@ -150,10 +161,14 @@ col_gauche, col_havanana = st.columns([1, 1.2], gap="large")
 
 with col_gauche:
     st.markdown("<p style='color: #00ffff; font-weight: bold; margin-bottom: 15px;'>Veuillez selectionner l'historique dans le BET261 (PNG na JPG)...</p>", unsafe_allow_html=True)
-    uploaded_file = st.file_uploader("", type=["png", "jpg", "jpeg"])
+    
+    # Mamorona toerana raikitra ho an'ny uploader na preview
+    zone_gauche = st.empty()
+    
+    # Laharan'ny uploader tsotra aloha
+    uploaded_file = zone_gauche.file_uploader("", type=["png", "jpg", "jpeg"])
 
 with col_havanana:
-    # Nampiana lohateny Résultat mifanitsy tsara amin'ny ankavia
     st.markdown("<p style='color: #00ffff; font-weight: bold; margin-bottom: 15px;'>Résultat de l'analyse :</p>", unsafe_allow_html=True)
     
     if uploaded_file is not None:
@@ -161,10 +176,18 @@ with col_havanana:
             # Sokafy ny sary nampidirina
             image = Image.open(uploaded_file)
             
-            # Asehoy kely ao ambanin'ny fampidirana ny sary mba ho hita
-            with col_gauche:
-                st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
-                st.image(image, caption="Sary nampidirina", use_container_width=True)
+            # 🔄 FINTININA SY AMPIDIRINA AO ANATIN'ILAY ZONE UPLOADER IHANY NY SARY
+            # Solointsika sary mivantana ilay uploader teo amin'ny col_gauche
+            with zone_gauche.container():
+                st.markdown(f"""
+                    <div class="stFileUploader">
+                        <div class="preview-container">
+                            <img src="data:image/png;base64," id="preview-img">
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+                # Ampiasaina ny st.image d'origine fa terena ho ao anatin'ilay container vao novolavolaina
+                zone_gauche.image(image, use_container_width=True)
             
             with st.spinner("En cours de traitement du résultat..."):
                 # Initialisation an'ny EasyOCR (mampiasa CPU mba tsy hisy olana)
